@@ -1,5 +1,9 @@
 # bulbremote
 
+<div align="center">
+  <img src="./.github/screenshot.png" alt="screenshot" width="400">
+</div>
+
 A Tasmota-based remote control for the [Kauf BLF10](https://kaufha.com/blf10/)
 smart bulb. May work with other bulbs, but likely not.
 
