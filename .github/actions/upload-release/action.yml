@@ -16,7 +16,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - run: upload-artifacts $FILES
+    - run: ./.github/actions/upload-release/upload $FILES
       env:
         GITHUB_TOKEN: ${{ github.token }}
         GITHUB_REPO: ${{ github.repository }}
