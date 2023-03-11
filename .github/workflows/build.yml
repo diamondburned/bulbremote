@@ -13,7 +13,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          cache: node_modules
+          cache: npm
           node-version: 18
 
       - name: Install dependencies
