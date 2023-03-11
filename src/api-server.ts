@@ -22,10 +22,6 @@ const handlers: Record<string, vite.Connect.NextHandleFunction> = {
   },
 };
 
-function requestURL(req: vite.Connect.IncomingMessage): URL {
-  return new URL(req.url ?? "/", `http://${req.headers.host}`);
-}
-
 export const apiServer = () => ({
   name: "api-server",
   configureServer(server: vite.ViteDevServer) {
