@@ -1,9 +1,8 @@
 name: Build and upload static site
 
 on:
-  push:
-    tags:
-      - "*"
+  release:
+    types: [published]
 
 jobs:
   build:
@@ -18,10 +17,8 @@ jobs:
           name: dist
           path: ./dist
 
-      - name: Upload to release
-        uses: svenstaro/upload-release-action@v2
+      - run: tar -czvf dist.tar.gz dist
+
+      - uses: ./.github/actions/upload-release
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          tag: ${{ github.ref }}
-          file: ./dist
-          overwrite: true
+          files: dist.tar.gz
