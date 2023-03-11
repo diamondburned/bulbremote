@@ -16,9 +16,11 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Upload artifacts to GitHub Releases
-      run: upload-artifacts artifacts
+    - uses: actions/checkout@v3
+
+    - run: upload-artifacts $FILES
       env:
         GITHUB_TOKEN: ${{ github.token }}
         GITHUB_REPO: ${{ github.repository }}
         RELEASE_ID: ${{ github.event.release.id }}
+        FILES: ${{ inputs.files }}
