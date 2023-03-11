@@ -1,0 +1,26 @@
+$primary-hue: 349; // trans pink
+$primary-50: hsl($primary-hue, 75%, 99%);
+$primary-100: hsl($primary-hue, 77%, 95%);
+$primary-200: hsl($primary-hue, 79%, 91%);
+$primary-300: hsl($primary-hue, 81%, 87%);
+$primary-400: hsl($primary-hue, 83%, 83%);
+$primary-500: hsl($primary-hue, 85%, 79%);
+$primary-600: hsl($primary-hue, 87%, 75%);
+$primary-700: hsl($primary-hue, 89%, 71%);
+$primary-800: hsl($primary-hue, 91%, 67%);
+$primary-900: hsl($primary-hue, 93%, 63%);
+
+$grey-hue: 349;
+$grey-50: hsl($grey-hue, 12%, 98%);
+$grey-100: hsl($grey-hue, 11%, 89%);
+$grey-200: hsl($grey-hue, 10%, 80%);
+$grey-300: hsl($grey-hue, 9%, 71%);
+$grey-400: hsl($grey-hue, 8%, 62%);
+$grey-500: hsl($grey-hue, 7%, 53%);
+$grey-600: hsl($grey-hue, 6%, 44%);
+$grey-700: hsl($grey-hue, 5%, 35%);
+$grey-800: hsl($grey-hue, 4%, 26%);
+$grey-900: hsl($grey-hue, 3%, 17%);
+
+@import "normalize.css";
+@import "@picocss/pico/scss/pico";
