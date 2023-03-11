@@ -12,8 +12,6 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-
       - uses: actions/download-artifact@v3
         with:
           name: dist
@@ -21,6 +19,6 @@ jobs:
 
       - run: tar -czvf dist.tar.gz dist
 
-      - uses: ./.github/actions/upload-release
+      - uses: diamondburned/action-upload-release@main
         with:
           files: dist.tar.gz
