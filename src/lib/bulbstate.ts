@@ -2,6 +2,7 @@ import * as store from "svelte/store";
 import * as jsonbin from "./jsonbin.js";
 
 export type State = {
+  on: boolean;
   w: number;
   h: number;
   s: number;
@@ -10,6 +11,7 @@ export type State = {
 
 function defaultState(): State {
   return {
+    on: true,
     w: 100,
     h: 365 / 2,
     s: 0,
@@ -21,6 +23,7 @@ export async function restoreState(bin: jsonbin.Bin<State>): Promise<State> {
   const data = await bin.get();
   const state = data.record;
   if (
+    state.on === undefined ||
     state.w === undefined ||
     state.h === undefined ||
     state.s === undefined ||

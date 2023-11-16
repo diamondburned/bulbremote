@@ -3,7 +3,11 @@
 
   import type { State } from "#/lib/bulbstate.js";
 
-  import { state, restoreState, saveState } from "#/lib/bulbstate.js";
+  import {
+    state,
+    saveState as saveState_,
+    restoreState,
+  } from "#/lib/bulbstate.js";
   import { throttle } from "#/lib/throttle.js";
   import { onMount } from "svelte";
 
@@ -13,22 +17,72 @@
 
   let loading: Promise<any>;
   let bin: jsonbin.Bin<State>;
+  let saved = true;
+
+  async function saveState() {
+    if (!bin) {
+      return;
+    }
+
+    await saveState_(bin);
+    saved = true;
+    console.debug("state saved");
+  }
+
+  const updateRate = 250; // ms per update
+  const saveRate = 1000; // ms per save
+
+  // Force state saving to run every 1 second max.
+  const save = throttle(saveRate, () => saveState());
+
+  // Subscribe to changes only after we've restored the state. Otherwise,
+  // the light bulb will be turned on/off when the page is loaded.
+  const apply = throttle(updateRate, () => {
+    api.command(tasmota.commandApply($state));
+  });
 
   onMount(() => {
+    // Prevent the user from leaving the page if the state is unsaved.
+    // We'll also asynchronously save the state to the server.
+    let savePromise: Promise<void> | null = null;
+
+    const onBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (saved) return;
+      e.preventDefault();
+
+      if (!savePromise) {
+        savePromise = saveState();
+      }
+    };
+
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => window.removeEventListener("beforeunload", onBeforeUnload);
+  });
+
+  onMount(() => {
+    // Enable light bulb fading. Keep duration the same as the throttle
+    // duration.
+    api.command(tasmota.commandFade());
+  });
+
+  onMount(async () => {
     loading = (async () => {
       const config = await api.config();
       bin = new jsonbin.Bin(config.JSONBIN_ID, config.JSONBIN_TOKEN);
-      state.set(await restoreState(bin));
-
-      // Subscribe to changes only after we've restored the state. Otherwise,
-      // the light bulb will be turned on/off when the page is loaded.
-      const apply = throttle(250, () => api.apply(tasmota.convert($state)));
-      state.subscribe(() => apply());
+      $state = await restoreState(bin);
     })();
-  });
 
-  // Force state saving to run every 1 second max.
-  const save = throttle(1000, () => saveState(bin));
+    // Hook onto the state change and mark the state as unsaved.
+    // We only do this after the state has been restored, otherwise
+    // the light bulb will be turned on/off when the page is loaded.
+    await loading;
+
+    return state.subscribe(() => {
+      saved = false;
+      apply();
+      save();
+    });
+  });
 </script>
 
 <main
@@ -37,19 +91,22 @@
     --h: {$state.h}deg;
     --s: {$state.s / 100};
     --v: {$state.v / 100};
+	--bulb-v: {$state.on ? 1 : 0.2};
+	--bulb-s: {$state.on ? 1 : 0.0};
   "
 >
   {#await loading}
     <p aria-busy="true">Loading...</p>
   {:then}
-    <h1 role="img" aria-label="Bulb Control (click to turn off)">
-      <a
-        href="#top"
-        on:click={() => {
-          $state.v = 0;
-        }}>💡</a
-      >
-    </h1>
+    <a
+      href={"#"}
+      role="button"
+      class="bulb-toggle"
+      aria-label="Bulb Control (click to turn off)"
+      on:click={() => {
+        $state.on = !$state.on;
+      }}>💡</a
+    >
     <form>
       <label for="w">White Temperature</label>
       <input
@@ -107,14 +164,19 @@
     justify-content: center;
   }
 
-  h1 {
+  a.bulb-toggle {
+    filter: saturate(var(--bulb-s)) brightness(var(--bulb-v));
     font-size: 4em;
-    filter: saturate(var(--v)) brightness(var(--v));
-    opacity: calc(0.2 + (var(--v) / 1 * 0.8));
+    user-select: none;
+    text-decoration: none;
   }
 
-  h1[role="img"] a {
-    text-decoration: none;
+  a.bulb-toggle,
+  a.bulb-toggle:focus {
+    box-shadow: none;
+    background: none;
+    outline: none;
+    border: none;
   }
 
   form {

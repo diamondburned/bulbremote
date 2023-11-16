@@ -1,3 +1,7 @@
+{
+	admin off
+}
+
 http://localhost:5001
 
 handle * {
@@ -12,7 +16,8 @@ handle /api/config {
 	}`
 }
 
-handle /api/apply {
-	rewrite * /?{query}
+handle /api/command {
+	method * GET # Tasmota is dog shit.
+	rewrite * /cm?cmnd={query.cmnd}
 	reverse_proxy * {env.APP_TASMOTA_ADDRESS}
 }

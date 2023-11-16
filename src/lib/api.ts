@@ -1,6 +1,5 @@
 import * as jsonbin from "./jsonbin.js";
 import * as tasmota from "./tasmota.js";
-import * as state from "./bulbstate.js";
 
 export type Config = {
   JSONBIN_ID: string;
@@ -18,6 +17,8 @@ export async function config(): Promise<Config> {
   return json;
 }
 
-export async function apply(state: tasmota.State): Promise<void> {
-  await fetch(`/api/apply?${tasmota.encode(state)}`);
+export async function command(command: string): Promise<void> {
+  const query = new URLSearchParams();
+  query.set("cmnd", command);
+  await fetch("/api/command?" + query.toString());
 }
