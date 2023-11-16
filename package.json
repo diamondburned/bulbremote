@@ -3,7 +3,8 @@
   "type": "module",
   "license": "GPL-3.0-or-later",
   "scripts": {
-    "dev": "vite build && caddy run -c ./Caddyfile"
+    "dev": "vite build && caddy run -c ./Caddyfile",
+	"build": "vite build"
   },
   "devDependencies": {
     "@picocss/pico": "^1.5.7",
